@@ -1,24 +1,30 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { BackLink } from "@/components/layout/BackLink";
-import { getGames } from "@/api/endpoints";
 import { queryKeys } from "@/api/queryKeys";
+import { loadGames } from "@/api/tournamentData";
 import { MatchDetailContent } from "@/components/shared/MatchDetailContent";
 import { Skeleton } from "@/components/ui/skeleton";
 import { enrichMatch } from "@/lib/enrichMatch";
 import { useTournamentData } from "@/hooks/useTournamentData";
+import {
+  getTournamentDataSource,
+  useExampleDataEnabled,
+} from "@/stores/preferencesStore";
 
 export function MatchDetailPage() {
   const { id } = useParams<{ id: string }>();
+  useExampleDataEnabled();
+  const source = getTournamentDataSource();
   const { matches, teamMap, stadiumMap, isLoading } = useTournamentData();
 
   const cached = matches.find((match) => match.id === id);
 
   const fallbackQuery = useQuery({
-    queryKey: queryKeys.game(id ?? ""),
+    queryKey: queryKeys.game(id ?? "", source),
     queryFn: async () => {
-      const response = await getGames();
-      return response.games.find((game) => game.id === id) ?? null;
+      const games = await loadGames();
+      return games.find((game) => game.id === id) ?? null;
     },
     enabled: !cached && Boolean(id),
   });

@@ -1,14 +1,21 @@
 import { useQuery } from "@tanstack/react-query";
-import { getGroups } from "@/api/endpoints";
 import { queryKeys } from "@/api/queryKeys";
+import { loadGroups } from "@/api/tournamentData";
 import type { Group } from "@/api/types";
+import {
+  getTournamentDataSource,
+  useExampleDataEnabled,
+} from "@/stores/preferencesStore";
 
 export function useGroups() {
+  useExampleDataEnabled();
+  const source = getTournamentDataSource();
+
   return useQuery({
-    queryKey: queryKeys.groups,
+    queryKey: queryKeys.groups(source),
     queryFn: async () => {
-      const response = await getGroups();
-      return response.groups.sort((left, right) =>
+      const groups = await loadGroups();
+      return groups.sort((left, right) =>
         left.name.localeCompare(right.name),
       );
     },

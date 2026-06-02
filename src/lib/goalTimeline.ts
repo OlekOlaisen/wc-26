@@ -1,4 +1,4 @@
-import type { EnrichedMatch } from "@/api/types";
+import type { EnrichedMatch, GoalScorer } from "@/api/types";
 
 export interface GoalTimelineEntry {
   minute: string;
@@ -29,6 +29,13 @@ export function buildGoalTimeline(match: EnrichedMatch): GoalTimelineEntry[] {
   }
 
   return entries.sort((left, right) => left.minuteValue - right.minuteValue);
+}
+
+export function formatTeamScorers(scorers: GoalScorer[]): string | null {
+  if (scorers.length === 0) {
+    return null;
+  }
+  return scorers.map((scorer) => `${scorer.name} ${scorer.minute}'`).join(" · ");
 }
 
 export function formatScorerSummary(match: EnrichedMatch): string | null {

@@ -5,6 +5,7 @@ const STORAGE_KEY = "wc2026-preferences";
 
 export interface UserPreferences {
   timezone: string;
+  useExampleData: boolean;
 }
 
 function getDefaultTimezone(): string {
@@ -17,6 +18,7 @@ function getDefaultTimezone(): string {
 
 const defaultPreferences: UserPreferences = {
   timezone: getDefaultTimezone(),
+  useExampleData: false,
 };
 
 type Listener = () => void;
@@ -30,6 +32,7 @@ function loadPreferences(): UserPreferences {
   const stored = readJsonStorage<UserPreferences>(STORAGE_KEY, defaultPreferences);
   return {
     timezone: stored.timezone || defaultPreferences.timezone,
+    useExampleData: stored.useExampleData ?? defaultPreferences.useExampleData,
   };
 }
 
@@ -58,6 +61,16 @@ function subscribe(listener: Listener): () => void {
 
 export function usePreferences(): UserPreferences {
   return useSyncExternalStore(subscribe, getSnapshot, () => defaultPreferences);
+}
+
+export function useExampleDataEnabled(): boolean {
+  return usePreferences().useExampleData;
+}
+
+export type TournamentDataSource = "api" | "example";
+
+export function getTournamentDataSource(): TournamentDataSource {
+  return getPreferences().useExampleData ? "example" : "api";
 }
 
 export const TIMEZONE_OPTIONS = [

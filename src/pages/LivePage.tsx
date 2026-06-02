@@ -51,22 +51,29 @@ export function LivePage() {
       </div>
 
       {liveMatches.length === 0 ? (
-        <div className="space-y-4">
-          <p className="text-center text-sm text-muted-foreground">
-            No live matches right now.
-          </p>
+        <div className="space-y-8">
+          <div className="flex min-h-[min(42vh,320px)] flex-col items-center justify-center rounded-xl border border-dashed border-border/80 bg-muted/10 px-6 py-16 text-center">
+            <p className="text-base font-medium text-foreground/90">
+              No live matches right now
+            </p>
+            <p className="mt-2 max-w-xs text-sm text-muted-foreground">
+              Scores and match updates will appear here once play begins.
+            </p>
+          </div>
+
           {nextUpcoming && (
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-muted-foreground">
+            <section className="space-y-3">
+              <h3 className="text-sm font-semibold text-muted-foreground">
                 Next up
-              </p>
+              </h3>
               <MatchCard
                 match={nextUpcoming}
                 onSelect={setSelectedMatch}
               />
-            </div>
+            </section>
           )}
-          <div className="flex justify-center">
+
+          <div className="flex justify-center pb-2">
             <Button asChild>
               <Link to="/">View full schedule</Link>
             </Button>

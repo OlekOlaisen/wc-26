@@ -1,5 +1,5 @@
-import { Building2, ChevronRight } from "lucide-react";
-import { StadiumMeta } from "@/components/stadiums/StadiumMeta";
+import { ChevronRight } from "lucide-react";
+import { StadiumMeta, VenueFlagIcon } from "@/components/stadiums/StadiumMeta";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Stadium } from "@/api/types";
@@ -38,9 +38,7 @@ export function StadiumCard({ stadium }: StadiumCardProps) {
           aria-hidden
         />
         <div className="flex min-w-0 flex-1 items-center gap-3 p-4">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary">
-            <Building2 className="h-5 w-5" aria-hidden />
-          </div>
+          <VenueFlagIcon countryEn={stadium.country_en} />
 
           <div className="min-w-0 flex-1 space-y-1.5">
             <div className="flex items-start justify-between gap-2">

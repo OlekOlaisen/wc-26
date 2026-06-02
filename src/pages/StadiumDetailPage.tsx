@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { BackLink } from "@/components/layout/BackLink";
-import { StadiumMeta } from "@/components/stadiums/StadiumMeta";
+import { StadiumMeta, VenueFlagIcon } from "@/components/stadiums/StadiumMeta";
 import { MatchCard } from "@/components/schedule/MatchCard";
 import { MatchDetailSheet } from "@/components/schedule/MatchDetailSheet";
 import { Badge } from "@/components/ui/badge";
@@ -41,13 +41,18 @@ export function StadiumDetailPage() {
     <div className="space-y-6">
       <BackLink to="/stadiums">Venues</BackLink>
 
-      <div className="space-y-2">
-        <div className="flex flex-wrap items-start justify-between gap-2">
-          <h2 className="text-xl font-bold">{stadium.name_en}</h2>
-          {stadium.region && <Badge variant="outline">{stadium.region}</Badge>}
+      <div className="flex items-center gap-3">
+        <VenueFlagIcon countryEn={stadium.country_en} />
+        <div className="min-w-0 flex-1 space-y-2">
+          <div className="flex flex-wrap items-start justify-between gap-2">
+            <h2 className="text-xl font-bold">{stadium.name_en}</h2>
+            {stadium.region && (
+              <Badge variant="outline">{stadium.region}</Badge>
+            )}
+          </div>
+          <p className="text-sm text-muted-foreground">{stadium.fifa_name}</p>
+          <StadiumMeta stadium={stadium} className="text-sm" />
         </div>
-        <p className="text-sm text-muted-foreground">{stadium.fifa_name}</p>
-        <StadiumMeta stadium={stadium} className="text-sm" />
       </div>
 
       <section className="space-y-3">
@@ -60,6 +65,7 @@ export function StadiumDetailPage() {
               key={match.id}
               match={match}
               onSelect={setSelectedMatch}
+              showVenue={false}
             />
           ))}
         </div>

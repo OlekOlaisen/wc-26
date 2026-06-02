@@ -1,10 +1,11 @@
-import { Calendar, ChevronRight, MapPin, Trophy } from "lucide-react";
+import { Calendar, ChevronRight, MapPin } from "lucide-react";
+import { WinnerTrophy } from "@/components/shared/WinnerTrophy";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { StadiumMeta } from "@/components/stadiums/StadiumMeta";
+import { HostCountryFlag, StadiumMeta } from "@/components/stadiums/StadiumMeta";
 import type { EnrichedMatch, MatchStatus } from "@/api/types";
 import { buildGoalTimeline } from "@/lib/goalTimeline";
 import {
@@ -62,12 +63,7 @@ export function MatchDetailContent({
             />
           )}
           <div className="flex items-center gap-1">
-            {winnerSide === "home" && (
-              <Trophy
-                className="h-4 w-4 shrink-0 text-amber-500"
-                aria-label="Winner"
-              />
-            )}
+            {winnerSide === "home" && <WinnerTrophy className="h-5 w-5" />}
             <p className="font-semibold">{match.homeDisplayName}</p>
             <FavoriteStar teamId={match.home_team_id} />
           </div>
@@ -89,12 +85,7 @@ export function MatchDetailContent({
             />
           )}
           <div className="flex items-center gap-1">
-            {winnerSide === "away" && (
-              <Trophy
-                className="h-4 w-4 shrink-0 text-amber-500"
-                aria-label="Winner"
-              />
-            )}
+            {winnerSide === "away" && <WinnerTrophy className="h-5 w-5" />}
             <p className="font-semibold">{match.awayDisplayName}</p>
             <FavoriteStar teamId={match.away_team_id} />
           </div>
@@ -186,8 +177,12 @@ export function MatchDetailContent({
               <p className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
                 Venue
               </p>
-              <p className="mt-0.5 truncate text-base font-semibold leading-tight">
-                {match.stadium.name_en}
+              <p className="mt-0.5 flex min-w-0 items-center gap-2 text-base font-semibold leading-tight">
+                <HostCountryFlag
+                  countryEn={match.stadium.country_en}
+                  className="h-4 w-6"
+                />
+                <span className="truncate">{match.stadium.name_en}</span>
               </p>
               {match.stadium.fifa_name.trim() &&
                 match.stadium.fifa_name.trim() !== match.stadium.name_en && (

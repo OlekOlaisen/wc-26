@@ -1,28 +1,32 @@
 import { useQuery } from "@tanstack/react-query";
-import { getStadiums, getTeams } from "@/api/endpoints";
 import { queryKeys } from "@/api/queryKeys";
+import { loadStadiums, loadTeams } from "@/api/tournamentData";
 import type { Stadium, Team } from "@/api/types";
+import {
+  getTournamentDataSource,
+  useExampleDataEnabled,
+} from "@/stores/preferencesStore";
 
 const catalogStaleTime = 1000 * 60 * 60;
 
 export function useTeams() {
+  useExampleDataEnabled();
+  const source = getTournamentDataSource();
+
   return useQuery({
-    queryKey: queryKeys.teams,
-    queryFn: async () => {
-      const response = await getTeams();
-      return response.teams;
-    },
+    queryKey: queryKeys.teams(source),
+    queryFn: loadTeams,
     staleTime: catalogStaleTime,
   });
 }
 
 export function useStadiums() {
+  useExampleDataEnabled();
+  const source = getTournamentDataSource();
+
   return useQuery({
-    queryKey: queryKeys.stadiums,
-    queryFn: async () => {
-      const response = await getStadiums();
-      return response.stadiums;
-    },
+    queryKey: queryKeys.stadiums(source),
+    queryFn: loadStadiums,
     staleTime: catalogStaleTime,
   });
 }

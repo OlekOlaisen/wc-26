@@ -1,5 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { BackLink } from "@/components/layout/BackLink";
 import { getHealth } from "@/api/endpoints";
 import { queryKeys } from "@/api/queryKeys";
@@ -12,6 +11,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { useTournamentData } from "@/hooks/useTournamentData";
 import { downloadCalendarIcs } from "@/lib/exportCalendar";
 import {
@@ -22,9 +22,15 @@ import {
 import { useFavoriteTeamIds } from "@/stores/favoritesStore";
 
 export function SettingsPage() {
+  const queryClient = useQueryClient();
   const preferences = usePreferences();
   const favoriteTeamIds = useFavoriteTeamIds();
   const { matches } = useTournamentData();
+
+  function handleExampleDataChange(checked: boolean) {
+    updatePreferences({ useExampleData: checked });
+    void queryClient.invalidateQueries();
+  }
 
   const healthQuery = useQuery({
     queryKey: queryKeys.health,
@@ -98,9 +104,35 @@ export function SettingsPage() {
 
       <Card>
         <CardHeader className="pb-2">
+          <CardTitle className="text-base">Testing</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between gap-4">
+            <div className="space-y-1">
+              <p className="text-sm font-medium">Use example data</p>
+              <p className="text-xs text-muted-foreground">
+                Replaces live API data for offline UI testing. Persists across
+                reloads.
+              </p>
+            </div>
+            <Switch
+              checked={preferences.useExampleData}
+              onCheckedChange={handleExampleDataChange}
+              aria-label="Use example data"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="pb-2">
           <CardTitle className="text-base">API</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 text-sm">
+          <p>
+            Data source:{" "}
+            {preferences.useExampleData ? "Example" : "Live API"}
+          </p>
           <p>
             Status:{" "}
             {healthQuery.data?.status === "healthy" ? "Healthy" : "Unknown"}

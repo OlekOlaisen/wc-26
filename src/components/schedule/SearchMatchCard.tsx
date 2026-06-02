@@ -1,4 +1,4 @@
-import { Trophy } from "lucide-react";
+import { WinnerTrophy } from "@/components/shared/WinnerTrophy";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import type { EnrichedMatch } from "@/api/types";
@@ -47,12 +47,7 @@ function CompactTeamRow({
         </div>
       )}
       <span className="truncate text-sm font-medium leading-tight">{name}</span>
-      {isWinner && (
-        <Trophy
-          className="h-3 w-3 shrink-0 text-amber-500"
-          aria-label="Winner"
-        />
-      )}
+      {isWinner && <WinnerTrophy className="h-4 w-4" />}
       {score !== "" && (
         <span className="shrink-0 text-lg font-bold tabular-nums leading-none">
           {score}
@@ -79,9 +74,6 @@ export function SearchMatchCard({ match }: SearchMatchCardProps) {
       <div className="space-y-2">
         <div className="flex items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-1">
-            {match.status === "live" && (
-              <Badge variant="live">LIVE</Badge>
-            )}
             <Badge
               variant="secondary"
               className="px-1.5 py-0 text-[10px] leading-tight"
@@ -92,19 +84,24 @@ export function SearchMatchCard({ match }: SearchMatchCardProps) {
               #{match.id}
             </span>
           </div>
-          {!showScore && (
-            <Badge
-              variant="secondary"
-              className="h-auto shrink-0 flex-col items-end gap-0 px-1.5 py-0.5 text-right text-[10px] leading-tight"
-            >
-              <span>
-                {formatDateInUserTimezone(match.kickoffAt, "EEE, MMM d")}
-              </span>
-              <span className="font-normal text-muted-foreground">
-                {formatKickoffInUserTimezone(match.kickoffAt)}
-              </span>
-            </Badge>
-          )}
+          <div className="flex shrink-0 items-center gap-1">
+            {match.status === "live" && (
+              <Badge variant="live">LIVE</Badge>
+            )}
+            {!showScore && (
+              <Badge
+                variant="secondary"
+                className="h-auto flex-col items-end gap-0 px-1.5 py-0.5 text-right text-[10px] leading-tight"
+              >
+                <span>
+                  {formatDateInUserTimezone(match.kickoffAt, "EEE, MMM d")}
+                </span>
+                <span className="font-normal text-muted-foreground">
+                  {formatKickoffInUserTimezone(match.kickoffAt)}
+                </span>
+              </Badge>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center gap-2">

@@ -1,24 +1,31 @@
 import { useQuery } from "@tanstack/react-query";
-import { getGames } from "@/api/endpoints";
 import { queryKeys } from "@/api/queryKeys";
+import { loadGames } from "@/api/tournamentData";
 import type { EnrichedMatch } from "@/api/types";
 import { enrichMatches } from "@/lib/enrichMatch";
 import { hasAnyLiveMatch } from "@/lib/matchStatus";
+import {
+  getTournamentDataSource,
+  useExampleDataEnabled,
+} from "@/stores/preferencesStore";
 import { useStadiums, useTeams } from "./useCatalog";
 
 export function useEnrichedMatches() {
+  const useExampleData = useExampleDataEnabled();
+  const source = getTournamentDataSource();
   const teamsQuery = useTeams();
   const stadiumsQuery = useStadiums();
 
   const gamesQuery = useQuery({
-    queryKey: queryKeys.games,
-    queryFn: async () => {
-      const response = await getGames();
-      return response.games;
-    },
+    queryKey: queryKeys.games(source),
+    queryFn: loadGames,
     staleTime: 1000 * 30,
-    refetchOnWindowFocus: true,
+    refetchOnWindowFocus: !useExampleData,
     refetchInterval: (query) => {
+      if (useExampleData) {
+        return false;
+      }
+
       const teams = teamsQuery.data ?? [];
       const stadiums = stadiumsQuery.data ?? [];
       const games = query.state.data ?? [];
@@ -57,9 +64,9 @@ export function useEnrichedMatches() {
       stadiumsQuery.isError ||
       gamesQuery.isError,
     error:
+      gamesQuery.error ??
       teamsQuery.error ??
-      stadiumsQuery.error ??
-      gamesQuery.error,
+      stadiumsQuery.error,
     dataUpdatedAt: gamesQuery.dataUpdatedAt,
     refetch: gamesQuery.refetch,
   };

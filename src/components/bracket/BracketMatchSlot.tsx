@@ -1,5 +1,6 @@
-import { Trophy } from "lucide-react";
 import { Link } from "react-router-dom";
+import { WinnerTrophy } from "@/components/shared/WinnerTrophy";
+import { StadiumVenueLine } from "@/components/stadiums/StadiumMeta";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import type { EnrichedMatch } from "@/api/types";
@@ -46,40 +47,36 @@ export function BracketMatchSlot({ match }: BracketMatchSlotProps) {
               </Badge>
             </div>
           </div>
-          <div className="space-y-1 text-sm">
-            <div className="flex justify-between gap-2">
-              <span className="flex min-w-0 items-center gap-1 line-clamp-1">
-                {winnerSide === "home" && (
-                  <Trophy
-                    className="h-3.5 w-3.5 shrink-0 text-amber-500"
-                    aria-label="Winner"
-                  />
-                )}
-                {match.homeDisplayName}
-              </span>
-              {showScore && (
-                <span className="font-bold tabular-nums">
-                  {match.home_score}
-                </span>
+          <div className="flex items-center gap-1.5 text-sm">
+            <span className="flex min-w-0 flex-1 items-center justify-end gap-1 text-right leading-tight">
+              {winnerSide === "home" && (
+                <WinnerTrophy className="h-4 w-4" />
               )}
-            </div>
-            <div className="flex justify-between gap-2">
-              <span className="flex min-w-0 items-center gap-1 line-clamp-1">
-                {winnerSide === "away" && (
-                  <Trophy
-                    className="h-3.5 w-3.5 shrink-0 text-amber-500"
-                    aria-label="Winner"
-                  />
-                )}
-                {match.awayDisplayName}
-              </span>
-              {showScore && (
-                <span className="font-bold tabular-nums">
-                  {match.away_score}
-                </span>
+              <span className="line-clamp-2">{match.homeDisplayName}</span>
+            </span>
+            <span className="flex shrink-0 items-center gap-1 text-muted-foreground">
+              {showScore ? (
+                <>
+                  <span className="font-bold tabular-nums text-foreground">
+                    {match.home_score}
+                  </span>
+                  <span aria-hidden>–</span>
+                  <span className="font-bold tabular-nums text-foreground">
+                    {match.away_score}
+                  </span>
+                </>
+              ) : (
+                <span aria-hidden>–</span>
               )}
-            </div>
+            </span>
+            <span className="flex min-w-0 flex-1 items-center gap-1 leading-tight">
+              {winnerSide === "away" && (
+                <WinnerTrophy className="h-4 w-4" />
+              )}
+              <span className="line-clamp-2">{match.awayDisplayName}</span>
+            </span>
           </div>
+          {match.stadium && <StadiumVenueLine stadium={match.stadium} />}
         </CardContent>
       </Card>
     </Link>

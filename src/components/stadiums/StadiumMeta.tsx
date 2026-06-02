@@ -1,8 +1,56 @@
-import { MapPin, Users } from "lucide-react";
+import { Building2, MapPin, Users } from "lucide-react";
 import type { Stadium } from "@/api/types";
+import { useTeams } from "@/hooks/useCatalog";
+import { getHostCountryFlag } from "@/lib/hostCountryFlag";
 import { cn } from "@/lib/utils";
 
 const metaIconClass = "h-3.5 w-3.5 shrink-0 opacity-70";
+
+export function HostCountryFlag({
+  countryEn,
+  className,
+}: {
+  countryEn: string;
+  className?: string;
+}) {
+  const { data: teams = [] } = useTeams();
+  const flagUrl = getHostCountryFlag(countryEn, teams);
+
+  if (!flagUrl) {
+    return null;
+  }
+
+  return (
+    <img
+      src={flagUrl}
+      alt=""
+      className={cn("shrink-0 rounded object-cover", className)}
+      loading="lazy"
+    />
+  );
+}
+
+export function VenueFlagIcon({ countryEn }: { countryEn: string }) {
+  const { data: teams = [] } = useTeams();
+  const flagUrl = getHostCountryFlag(countryEn, teams);
+
+  if (flagUrl) {
+    return (
+      <img
+        src={flagUrl}
+        alt=""
+        className="h-11 w-11 shrink-0 rounded-xl object-cover ring-1 ring-border"
+        loading="lazy"
+      />
+    );
+  }
+
+  return (
+    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary">
+      <Building2 className="h-5 w-5" aria-hidden />
+    </div>
+  );
+}
 
 interface StadiumMetaProps {
   stadium: Stadium;
@@ -51,7 +99,10 @@ export function StadiumVenueLine({ stadium, className }: StadiumVenueLineProps) 
         className,
       )}
     >
-      <MapPin className="h-3 w-3 shrink-0 opacity-70" aria-hidden />
+      <HostCountryFlag
+        countryEn={stadium.country_en}
+        className="h-3 w-4"
+      />
       <span className="truncate">
         {stadium.name_en} · {stadium.city_en}
       </span>
