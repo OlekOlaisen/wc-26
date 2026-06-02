@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { BackLink } from "@/components/layout/BackLink";
 import { MatchCard } from "@/components/schedule/MatchCard";
 import { MatchDetailSheet } from "@/components/schedule/MatchDetailSheet";
 import { FavoriteStar } from "@/components/shared/FavoriteStar";
@@ -31,18 +32,14 @@ export function TeamDetailPage() {
     return (
       <div className="space-y-4 text-center text-sm">
         <p>Team not found.</p>
-        <Link to="/teams" className="text-primary underline">
-          Back to teams
-        </Link>
+        <BackLink to="/teams">Back to teams</BackLink>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <Link to="/teams" className="text-sm text-primary underline">
-        ← Teams
-      </Link>
+      <BackLink to="/teams">Teams</BackLink>
 
       <div className="flex flex-col items-center gap-3 text-center">
         <img

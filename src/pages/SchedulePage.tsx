@@ -8,10 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { EnrichedMatch, MatchFilter } from "@/api/types";
 import { useTournamentData } from "@/hooks/useTournamentData";
 import { filterFavoriteMatches } from "@/lib/favoriteMatches";
-import {
-  getDefaultSelectedDateKey,
-  groupMatchesByDate,
-} from "@/lib/groupByDate";
+import { groupMatchesByDate } from "@/lib/groupByDate";
 import { useFavoriteTeamIds } from "@/stores/favoritesStore";
 
 export function SchedulePage() {
@@ -25,8 +22,8 @@ export function SchedulePage() {
   );
   const favoriteTeamIds = useFavoriteTeamIds();
 
-  const resolvedDateKey =
-    selectedDateKey ?? getDefaultSelectedDateKey(matches);
+  const showAllDates =
+    favoritesOnly || activeFilter === "upcoming" || selectedDateKey === null;
 
   const matchesByDate = useMemo(
     () => groupMatchesByDate(matches),
@@ -34,9 +31,9 @@ export function SchedulePage() {
   );
 
   const filteredMatches = useMemo(() => {
-    let pool: EnrichedMatch[] = favoritesOnly
+    let pool: EnrichedMatch[] = showAllDates
       ? matches
-      : (matchesByDate.get(resolvedDateKey) ?? []);
+      : (matchesByDate.get(selectedDateKey!) ?? []);
 
     if (favoritesOnly) {
       pool = filterFavoriteMatches(pool, favoriteTeamIds);
@@ -49,18 +46,19 @@ export function SchedulePage() {
   }, [
     matches,
     matchesByDate,
-    resolvedDateKey,
+    selectedDateKey,
+    showAllDates,
     favoritesOnly,
     favoriteTeamIds,
     activeFilter,
   ]);
 
   const filteredMatchesByDate = useMemo(() => {
-    if (!favoritesOnly) {
+    if (!showAllDates) {
       return null;
     }
     return groupMatchesByDate(filteredMatches);
-  }, [favoritesOnly, filteredMatches]);
+  }, [showAllDates, filteredMatches]);
 
   const filteredDateKeys = useMemo(() => {
     if (!filteredMatchesByDate) {
@@ -78,9 +76,24 @@ export function SchedulePage() {
     }
   }
 
+  function handleFilterChange(filter: MatchFilter) {
+    setActiveFilter(filter);
+    if (filter === "live") {
+      setFavoritesOnly(false);
+    }
+    if (filter === "upcoming") {
+      setSelectedDateKey(null);
+    }
+  }
+
   function handleSelectDateKey(dateKey: string) {
     setFavoritesOnly(false);
-    setSelectedDateKey(dateKey);
+    if (activeFilter === "upcoming") {
+      setActiveFilter("all");
+    }
+    setSelectedDateKey((currentDateKey) =>
+      currentDateKey === dateKey ? null : dateKey,
+    );
   }
 
   if (isLoading) {
@@ -105,7 +118,30 @@ export function SchedulePage() {
     );
   }
 
-  const dateStripSelection = favoritesOnly ? null : resolvedDateKey;
+  const dateStripSelection =
+    favoritesOnly || activeFilter === "upcoming" ? null : selectedDateKey;
+
+  function getScheduleSubtitle(): string {
+    if (favoritesOnly && activeFilter === "upcoming") {
+      return "Favorite teams · upcoming";
+    }
+    if (favoritesOnly) {
+      return "Favorite teams · all dates";
+    }
+    if (activeFilter === "upcoming") {
+      return "All upcoming matches";
+    }
+    if (selectedDateKey) {
+      return format(dateKeyToDate(selectedDateKey), "EEEE, MMMM d, yyyy");
+    }
+    if (activeFilter === "live") {
+      return "All live matches";
+    }
+    if (activeFilter === "finished") {
+      return "All finished matches";
+    }
+    return "All dates";
+  }
 
   return (
     <div className="space-y-4">
@@ -113,9 +149,7 @@ export function SchedulePage() {
         <div>
           <h2 className="text-lg font-semibold">Schedule</h2>
           <p className="text-xs text-muted-foreground">
-            {favoritesOnly
-              ? "Favorite teams · all dates"
-              : format(dateKeyToDate(resolvedDateKey), "EEEE, MMMM d, yyyy")}
+            {getScheduleSubtitle()}
           </p>
         </div>
         {dataUpdatedAt > 0 && (
@@ -132,7 +166,7 @@ export function SchedulePage() {
 
       <MatchFilters
         activeFilter={activeFilter}
-        onFilterChange={setActiveFilter}
+        onFilterChange={handleFilterChange}
         favoritesOnly={favoritesOnly}
         onFavoritesOnlyChange={handleFavoritesOnlyChange}
       />
@@ -149,10 +183,14 @@ export function SchedulePage() {
           <p>
             {favoritesOnly
               ? "No favorite team matches match your filters."
-              : "No matches match your filters on this day."}
+              : activeFilter === "upcoming"
+                ? "No upcoming matches."
+                : selectedDateKey
+                  ? "No matches match your filters on this day."
+                  : "No matches match your filters."}
           </p>
         </div>
-      ) : favoritesOnly ? (
+      ) : showAllDates ? (
         <div className="space-y-6">
           {filteredDateKeys.map((dateKey) => (
             <section key={dateKey} className="space-y-3">

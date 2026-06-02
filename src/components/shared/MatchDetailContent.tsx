@@ -4,7 +4,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import type { EnrichedMatch, MatchStatus, Stadium } from "@/api/types";
+import { StadiumMeta } from "@/components/stadiums/StadiumMeta";
+import type { EnrichedMatch, MatchStatus } from "@/api/types";
 import { buildGoalTimeline } from "@/lib/goalTimeline";
 import {
   formatDateInUserTimezone,
@@ -14,18 +15,6 @@ import { getMatchWinnerSide } from "@/lib/matchWinner";
 import { usePreferences } from "@/stores/preferencesStore";
 import { cn } from "@/lib/utils";
 import { FavoriteStar } from "./FavoriteStar";
-
-function formatStadiumSummary(stadium: Stadium): string {
-  const location = `${stadium.city_en}, ${stadium.country_en}`;
-  const capacity = `${stadium.capacity.toLocaleString()} seats`;
-  const fifaName = stadium.fifa_name.trim();
-
-  if (!fifaName || fifaName === stadium.name_en) {
-    return `${location} · ${capacity}`;
-  }
-
-  return `${fifaName} · ${location} · ${capacity}`;
-}
 
 function getStatusLabel(status: MatchStatus): string {
   switch (status) {
@@ -200,9 +189,15 @@ export function MatchDetailContent({
               <p className="mt-0.5 truncate text-base font-semibold leading-tight">
                 {match.stadium.name_en}
               </p>
-              <p className="mt-1 truncate text-sm text-muted-foreground">
-                {formatStadiumSummary(match.stadium)}
-              </p>
+              {match.stadium.fifa_name.trim() &&
+                match.stadium.fifa_name.trim() !== match.stadium.name_en && (
+                  <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                    {match.stadium.fifa_name}
+                  </p>
+                )}
+              <div className="mt-1.5">
+                <StadiumMeta stadium={match.stadium} />
+              </div>
             </div>
             <ChevronRight
               className="h-5 w-5 shrink-0 text-muted-foreground"

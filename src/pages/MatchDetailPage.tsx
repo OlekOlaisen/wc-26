@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { BackLink } from "@/components/layout/BackLink";
 import { getGames } from "@/api/endpoints";
 import { queryKeys } from "@/api/queryKeys";
 import { MatchDetailContent } from "@/components/shared/MatchDetailContent";
@@ -36,18 +37,14 @@ export function MatchDetailPage() {
     return (
       <div className="space-y-4 text-center text-sm">
         <p>Match not found.</p>
-        <Link to="/" className="text-primary underline">
-          Back to schedule
-        </Link>
+        <BackLink to="/">Back to schedule</BackLink>
       </div>
     );
   }
 
   return (
     <div className="space-y-4">
-      <Link to="/" className="text-sm text-primary underline">
-        ← Schedule
-      </Link>
+      <BackLink to="/">Schedule</BackLink>
       <h2 className="text-lg font-semibold">Match #{match.id}</h2>
       <MatchDetailContent match={match} showShareLink={false} />
     </div>

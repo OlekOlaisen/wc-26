@@ -1,24 +1,20 @@
 import { Trophy } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import type { EnrichedMatch } from "@/api/types";
-import { formatScorerSummary } from "@/lib/goalTimeline";
 import { getMatchWinnerSide } from "@/lib/matchWinner";
 import {
   formatDateInUserTimezone,
   formatKickoffInUserTimezone,
 } from "@/lib/formatMatchTime";
-import { useFavoriteTeamIds } from "@/stores/favoritesStore";
 import { usePreferences } from "@/stores/preferencesStore";
-import { StadiumVenueLine } from "@/components/stadiums/StadiumMeta";
 import { cn } from "@/lib/utils";
 
-interface MatchCardProps {
+interface SearchMatchCardProps {
   match: EnrichedMatch;
-  onSelect: (match: EnrichedMatch) => void;
 }
 
-function TeamRow({
+function CompactTeamRow({
   name,
   flag,
   score,
@@ -34,7 +30,7 @@ function TeamRow({
   return (
     <div
       className={cn(
-        "flex flex-1 items-center gap-2",
+        "flex min-w-0 flex-1 items-center gap-1.5",
         align === "right" && "flex-row-reverse text-right",
       )}
     >
@@ -42,65 +38,57 @@ function TeamRow({
         <img
           src={flag}
           alt=""
-          className="h-6 w-8 shrink-0 rounded object-cover"
+          className="h-5 w-7 shrink-0 rounded object-cover"
           loading="lazy"
         />
       ) : (
-        <div className="flex h-6 w-8 shrink-0 items-center justify-center rounded bg-muted text-[10px] text-muted-foreground">
+        <div className="flex h-5 w-7 shrink-0 items-center justify-center rounded bg-muted text-[9px] text-muted-foreground">
           ?
         </div>
       )}
-      <span className="line-clamp-2 text-sm font-medium leading-tight">
-        {name}
-      </span>
+      <span className="truncate text-sm font-medium leading-tight">{name}</span>
       {isWinner && (
         <Trophy
-          className="h-4 w-4 shrink-0 text-amber-500"
+          className="h-3 w-3 shrink-0 text-amber-500"
           aria-label="Winner"
         />
       )}
-      <span className="min-w-[1.5rem] text-2xl font-bold tabular-nums leading-none">
-        {score}
-      </span>
+      {score !== "" && (
+        <span className="shrink-0 text-lg font-bold tabular-nums leading-none">
+          {score}
+        </span>
+      )}
     </div>
   );
 }
 
-export function MatchCard({ match, onSelect }: MatchCardProps) {
+export function SearchMatchCard({ match }: SearchMatchCardProps) {
   usePreferences();
-  const favoriteTeamIds = useFavoriteTeamIds();
   const showScore =
     match.status === "live" || match.status === "finished";
-  const scorerSummary = formatScorerSummary(match);
-  const isFavorite =
-    favoriteTeamIds.includes(match.home_team_id) ||
-    favoriteTeamIds.includes(match.away_team_id);
   const winnerSide =
     match.status === "finished"
       ? getMatchWinnerSide(match.home_score, match.away_score)
       : null;
 
   return (
-    <Card
-      className={cn(
-        "cursor-pointer transition-colors hover:bg-accent/30",
-        isFavorite && "ring-1 ring-primary/30",
-      )}
-      onClick={() => onSelect(match)}
+    <Link
+      to={`/match/${match.id}`}
+      className="block rounded-lg border p-3 transition-colors hover:bg-accent/30"
     >
-      <CardContent className="space-y-3 p-4">
+      <div className="space-y-2">
         <div className="flex items-center justify-between gap-2">
-          <div className="flex flex-wrap items-center gap-1.5">
+          <div className="flex flex-wrap items-center gap-1">
             {match.status === "live" && (
               <Badge variant="live">LIVE</Badge>
             )}
-            {isFavorite && (
-              <Badge variant="outline" className="text-primary">
-                ★
-              </Badge>
-            )}
-            <Badge variant="secondary">{match.stageLabel}</Badge>
-            <span className="text-xs text-muted-foreground">
+            <Badge
+              variant="secondary"
+              className="px-1.5 py-0 text-[10px] leading-tight"
+            >
+              {match.stageLabel}
+            </Badge>
+            <span className="text-[10px] text-muted-foreground">
               #{match.id}
             </span>
           </div>
@@ -119,8 +107,8 @@ export function MatchCard({ match, onSelect }: MatchCardProps) {
           )}
         </div>
 
-        <div className="flex items-center gap-3">
-          <TeamRow
+        <div className="flex items-center gap-2">
+          <CompactTeamRow
             name={match.homeDisplayName}
             flag={match.homeFlag}
             score={showScore ? match.home_score : ""}
@@ -128,9 +116,9 @@ export function MatchCard({ match, onSelect }: MatchCardProps) {
             isWinner={winnerSide === "home"}
           />
           {showScore && (
-            <span className="text-xs text-muted-foreground">–</span>
+            <span className="shrink-0 text-xs text-muted-foreground">–</span>
           )}
-          <TeamRow
+          <CompactTeamRow
             name={match.awayDisplayName}
             flag={match.awayFlag}
             score={showScore ? match.away_score : ""}
@@ -138,22 +126,7 @@ export function MatchCard({ match, onSelect }: MatchCardProps) {
             isWinner={winnerSide === "away"}
           />
         </div>
-
-        {scorerSummary && (
-          <p className="truncate text-center text-xs text-muted-foreground">
-            {scorerSummary}
-          </p>
-        )}
-
-        {match.status === "live" && match.time_elapsed !== "notstarted" && (
-          <p className="text-center text-xs text-primary">
-            {match.time_elapsed}
-            &apos;
-          </p>
-        )}
-
-        {match.stadium && <StadiumVenueLine stadium={match.stadium} />}
-      </CardContent>
-    </Card>
+      </div>
+    </Link>
   );
 }

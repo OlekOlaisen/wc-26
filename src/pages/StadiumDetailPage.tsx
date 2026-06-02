@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { BackLink } from "@/components/layout/BackLink";
+import { StadiumMeta } from "@/components/stadiums/StadiumMeta";
 import { MatchCard } from "@/components/schedule/MatchCard";
 import { MatchDetailSheet } from "@/components/schedule/MatchDetailSheet";
 import { Badge } from "@/components/ui/badge";
@@ -30,18 +32,14 @@ export function StadiumDetailPage() {
     return (
       <div className="space-y-4 text-center text-sm">
         <p>Venue not found.</p>
-        <Link to="/stadiums" className="text-primary underline">
-          Back to venues
-        </Link>
+        <BackLink to="/stadiums">Back to venues</BackLink>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <Link to="/stadiums" className="text-sm text-primary underline">
-        ← Venues
-      </Link>
+      <BackLink to="/stadiums">Venues</BackLink>
 
       <div className="space-y-2">
         <div className="flex flex-wrap items-start justify-between gap-2">
@@ -49,12 +47,7 @@ export function StadiumDetailPage() {
           {stadium.region && <Badge variant="outline">{stadium.region}</Badge>}
         </div>
         <p className="text-sm text-muted-foreground">{stadium.fifa_name}</p>
-        <p className="text-sm">
-          {stadium.city_en}, {stadium.country_en}
-        </p>
-        <p className="text-sm text-muted-foreground">
-          Capacity: {stadium.capacity.toLocaleString()}
-        </p>
+        <StadiumMeta stadium={stadium} className="text-sm" />
       </div>
 
       <section className="space-y-3">

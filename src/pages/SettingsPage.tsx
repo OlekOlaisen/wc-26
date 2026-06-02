@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
+import { BackLink } from "@/components/layout/BackLink";
 import { getHealth } from "@/api/endpoints";
 import { queryKeys } from "@/api/queryKeys";
 import { Button } from "@/components/ui/button";
@@ -40,9 +41,7 @@ export function SettingsPage() {
   return (
     <div className="space-y-4">
       <div>
-        <Link to="/more" className="text-sm text-primary underline">
-          ← More
-        </Link>
+        <BackLink to="/more">More</BackLink>
         <h2 className="mt-2 text-lg font-semibold">Settings</h2>
       </div>
 

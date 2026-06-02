@@ -9,7 +9,7 @@ Data is provided by the free [World Cup 2026 API](https://worldcup26.ir) ([GitHu
 ### Main tabs
 - **Schedule** — date strip (Jun 11 – Jul 19), status filters (all/live/upcoming/finished), goal scorers on cards, favorite-team highlights
 - **Live** — all in-progress matches across the tournament; red dot on tab when any match is live
-- **Knockouts** — tabs for knockout bracket (R32–Final) and group standings A–L
+- **Standings** — tabs for knockout bracket (R32–Final) and group standings A–L
 - **More** — hub for teams, venues, groups, scorers, search, settings
 
 ### More section

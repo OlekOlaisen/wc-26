@@ -64,19 +64,28 @@ export function StadiumsPage() {
             {stadiums.length} host stadiums
           </p>
         </div>
-        <Link to="/more" className="text-sm text-primary underline">
+        <Link to="/more" className="text-sm font-medium text-primary">
           More
         </Link>
       </div>
 
       {[...byCountry.entries()].map(([country, countryStadiums]) => (
-        <section key={country} className="space-y-3">
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-            {country}
-          </h3>
-          <div className="space-y-3">
+        <section key={country} className="space-y-2">
+          <div className="flex items-baseline justify-between gap-2">
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              {country}
+            </h3>
+            <span className="text-xs text-muted-foreground/80">
+              {countryStadiums.length} venues
+            </span>
+          </div>
+          <div className="space-y-2">
             {countryStadiums.map((stadium) => (
-              <Link key={stadium.id} to={`/stadium/${stadium.id}`}>
+              <Link
+                key={stadium.id}
+                to={`/stadium/${stadium.id}`}
+                className="group block"
+              >
                 <StadiumCard stadium={stadium} />
               </Link>
             ))}

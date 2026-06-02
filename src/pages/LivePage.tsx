@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { MatchCard } from "@/components/schedule/MatchCard";
+import { Button } from "@/components/ui/button";
 import { MatchDetailSheet } from "@/components/schedule/MatchDetailSheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { EnrichedMatch } from "@/api/types";
@@ -65,11 +66,11 @@ export function LivePage() {
               />
             </div>
           )}
-          <p className="text-center">
-            <Link to="/" className="text-sm text-primary underline">
-              View full schedule
-            </Link>
-          </p>
+          <div className="flex justify-center">
+            <Button asChild>
+              <Link to="/">View full schedule</Link>
+            </Button>
+          </div>
         </div>
       ) : (
         <div className="space-y-3">

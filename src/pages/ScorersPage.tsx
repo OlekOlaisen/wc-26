@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Link } from "react-router-dom";
+import { BackLink } from "@/components/layout/BackLink";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTournamentData } from "@/hooks/useTournamentData";
@@ -63,10 +63,10 @@ export function ScorersPage() {
         </div>
       )}
 
-      <p className="text-center text-xs text-muted-foreground">
-        <Link to="/" className="text-primary underline">
-          Back to schedule
-        </Link>
+      <p className="flex justify-center">
+        <BackLink to="/" className="text-xs">
+          Schedule
+        </BackLink>
       </p>
     </div>
   );

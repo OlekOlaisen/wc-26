@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 const navItems = [
   { to: "/", label: "Schedule", icon: Calendar, end: true },
   { to: "/live", label: "Live", icon: Radio, end: false },
-  { to: "/bracket", label: "Knockouts", icon: Timeline, end: false },
+  { to: "/bracket", label: "Standings", icon: Timeline, end: false },
   { to: "/more", label: "More", icon: Menu, end: false },
 ] as const;
 
@@ -16,7 +16,7 @@ export function BottomNav() {
   const hasLive = hasAnyLiveMatch(matches.map((match) => match.status));
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+    <nav className="fixed inset-x-0 bottom-0 z-40 translate-z-0 border-t border-border bg-background pb-[env(safe-area-inset-bottom)]">
       <div className="mx-auto grid max-w-lg grid-cols-4">
         {navItems.map(({ to, label, icon: Icon, end }) => (
           <NavLink

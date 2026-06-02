@@ -1,5 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { SearchMatchCard } from "@/components/schedule/SearchMatchCard";
+import { StadiumMeta } from "@/components/stadiums/StadiumMeta";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTournamentData } from "@/hooks/useTournamentData";
@@ -58,18 +60,7 @@ export function SearchPage() {
               <p className="text-sm text-muted-foreground">No matches found</p>
             ) : (
               results.matches.map((match) => (
-                <Link
-                  key={match.id}
-                  to={`/match/${match.id}`}
-                  className="block rounded-lg border p-3 text-sm transition-colors hover:bg-accent/30"
-                >
-                  <p className="font-medium">
-                    {match.homeDisplayName} vs {match.awayDisplayName}
-                  </p>
-                  <p className="text-xs text-muted-foreground">
-                    #{match.id} · {match.stageLabel}
-                  </p>
-                </Link>
+                <SearchMatchCard key={match.id} match={match} />
               ))
             )}
           </section>
@@ -105,9 +96,7 @@ export function SearchPage() {
                 className="block rounded-lg border p-3 text-sm hover:bg-accent/30"
               >
                 <p className="font-medium">{stadium.name_en}</p>
-                <p className="text-xs text-muted-foreground">
-                  {stadium.city_en}
-                </p>
+                <StadiumMeta stadium={stadium} className="mt-1" />
               </Link>
             ))}
           </section>
