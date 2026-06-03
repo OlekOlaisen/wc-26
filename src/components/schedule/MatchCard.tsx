@@ -21,14 +21,12 @@ interface MatchCardProps {
 function TeamColumn({
   name,
   flag,
-  score,
   scorers,
   align,
   isWinner,
 }: {
   name: string;
   flag?: string;
-  score: string;
   scorers: GoalScorer[];
   align: "left" | "right";
   isWinner?: boolean;
@@ -62,9 +60,6 @@ function TeamColumn({
           {name}
         </span>
         {isWinner && <WinnerTrophy className="h-5 w-5 shrink-0" />}
-        <span className="min-w-[1.5rem] shrink-0 text-2xl font-bold tabular-nums leading-none">
-          {score}
-        </span>
       </div>
       {scorers.length > 0 && (
         <ul
@@ -142,24 +137,33 @@ export function MatchCard({
           </div>
         </div>
 
-        <div className="flex items-start gap-3">
+        <div className="flex items-start gap-2">
           <TeamColumn
             name={match.homeDisplayName}
             flag={match.homeFlag}
-            score={showScore ? match.home_score : ""}
             scorers={match.homeScorersList}
             align="left"
             isWinner={winnerSide === "home"}
           />
           {showScore && (
-            <span className="shrink-0 pt-1 text-xs text-muted-foreground">
-              –
-            </span>
+            <div
+              className="flex shrink-0 items-center gap-1 self-start pt-0.5 text-muted-foreground"
+              aria-label={`${match.home_score} to ${match.away_score}`}
+            >
+              <span className="min-w-[1.25rem] text-center text-2xl font-bold tabular-nums leading-none text-foreground">
+                {match.home_score}
+              </span>
+              <span className="text-xs" aria-hidden>
+                –
+              </span>
+              <span className="min-w-[1.25rem] text-center text-2xl font-bold tabular-nums leading-none text-foreground">
+                {match.away_score}
+              </span>
+            </div>
           )}
           <TeamColumn
             name={match.awayDisplayName}
             flag={match.awayFlag}
-            score={showScore ? match.away_score : ""}
             scorers={match.awayScorersList}
             align="right"
             isWinner={winnerSide === "away"}
