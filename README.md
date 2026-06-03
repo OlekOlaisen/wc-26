@@ -35,11 +35,15 @@ Local dev proxies API requests through `/api` → `worldcup26.ir` so the browser
 
 Open [http://localhost:5173](http://localhost:5173).
 
+## Deploy (Netlify)
+
+`netlify.toml` proxies `/api/*` to `worldcup26.ir` (same pattern as the Vite dev server). **Do not** set `VITE_API_BASE_URL` to `https://worldcup26.ir` in Netlify — the upstream API does not send CORS headers for third-party sites, so the browser will show “Failed to fetch”. Leave the variable unset, or set it to `/api`, then trigger a new deploy.
+
 ## Environment variables
 
 | Variable | Description |
 | -------- | ----------- |
-| `VITE_API_BASE_URL` | API base URL (localhost default: `/api` proxy; deployed default: `https://worldcup26.ir`) |
+| `VITE_API_BASE_URL` | Optional override (default: `/api` proxy). Avoid a bare `https://worldcup26.ir` URL in production. |
 | `VITE_API_TOKEN` | Optional JWT Bearer token if the API requires auth |
 
 ## Scripts

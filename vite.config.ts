@@ -41,7 +41,7 @@ export default defineConfig({
       workbox: {
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/worldcup26\.ir\/get\/.*/i,
+            urlPattern: /\/api\/get\/.*/i,
             handler: "NetworkFirst",
             options: {
               cacheName: "worldcup-api",

@@ -1,20 +1,10 @@
-const hostedApiOrigin = "https://worldcup26.ir";
-
 function resolveDefaultApiBaseUrl(): string {
-  if (typeof window === "undefined") {
-    return hostedApiOrigin;
-  }
-
-  const isLocalhost =
-    window.location.hostname === "localhost" ||
-    window.location.hostname === "127.0.0.1";
-
-  return isLocalhost ? "/api" : hostedApiOrigin;
+  return "/api";
 }
 
 /**
- * On localhost, defaults to `/api` (Vite proxy → worldcup26.ir) to avoid CORS.
- * On deployed hosts, defaults to the hosted API origin.
+ * Defaults to `/api`, proxied to worldcup26.ir (Vite in dev, Netlify in production).
+ * Set VITE_API_BASE_URL only if you host your own API proxy or CORS-enabled origin.
  */
 const apiBaseUrl =
   import.meta.env.VITE_API_BASE_URL ?? resolveDefaultApiBaseUrl();
