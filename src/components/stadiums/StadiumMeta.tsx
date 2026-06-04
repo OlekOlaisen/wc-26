@@ -30,23 +30,36 @@ export function HostCountryFlag({
   );
 }
 
-export function VenueFlagIcon({ countryEn }: { countryEn: string }) {
+export function VenueFlagIcon({
+  countryEn,
+  className,
+}: {
+  countryEn: string;
+  className?: string;
+}) {
   const { data: teams = [] } = useTeams();
   const flagUrl = getHostCountryFlag(countryEn, teams);
+  const defaultClassName =
+    "h-11 w-11 shrink-0 rounded-xl object-cover ring-1 ring-border";
 
   if (flagUrl) {
     return (
       <img
         src={flagUrl}
         alt=""
-        className="h-11 w-11 shrink-0 rounded-xl object-cover ring-1 ring-border"
+        className={cn(defaultClassName, className)}
         loading="lazy"
       />
     );
   }
 
   return (
-    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary">
+    <div
+      className={cn(
+        "flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary",
+        className,
+      )}
+    >
       <Building2 className="h-5 w-5" aria-hidden />
     </div>
   );

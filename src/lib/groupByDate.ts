@@ -1,4 +1,5 @@
 import type { EnrichedMatch } from "@/api/types";
+import { getMatchDateKey } from "@/lib/formatMatchTime";
 import { addDays, eachDayOfInterval, isSameDay } from "date-fns";
 
 export const TOURNAMENT_START = new Date(2026, 5, 11);
@@ -11,15 +12,28 @@ export function getTournamentDays(): Date[] {
   });
 }
 
+export function sortMatchesByKickoff(
+  matches: EnrichedMatch[],
+): EnrichedMatch[] {
+  return [...matches].sort(
+    (left, right) => left.kickoffAt.getTime() - right.kickoffAt.getTime(),
+  );
+}
+
 export function groupMatchesByDate(
   matches: EnrichedMatch[],
 ): Map<string, EnrichedMatch[]> {
   const grouped = new Map<string, EnrichedMatch[]>();
 
   for (const match of matches) {
-    const existing = grouped.get(match.dateKey) ?? [];
+    const dateKey = getMatchDateKey(match.kickoffAt);
+    const existing = grouped.get(dateKey) ?? [];
     existing.push(match);
-    grouped.set(match.dateKey, existing);
+    grouped.set(dateKey, existing);
+  }
+
+  for (const [dateKey, dayMatches] of grouped) {
+    grouped.set(dateKey, sortMatchesByKickoff(dayMatches));
   }
 
   return grouped;
@@ -35,11 +49,11 @@ export function getDefaultSelectedDateKey(
 
   const upcoming = matches.find((match) => match.status === "upcoming");
   if (upcoming) {
-    return upcoming.dateKey;
+    return getMatchDateKey(upcoming.kickoffAt);
   }
 
   const last = matches[matches.length - 1];
-  return last?.dateKey ?? "2026-06-11";
+  return last ? getMatchDateKey(last.kickoffAt) : "2026-06-11";
 }
 
 export function findTodayDateKey(): string | null {

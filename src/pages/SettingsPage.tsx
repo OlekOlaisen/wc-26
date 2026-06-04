@@ -1,7 +1,5 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { BackLink } from "@/components/layout/BackLink";
-import { getHealth } from "@/api/endpoints";
-import { queryKeys } from "@/api/queryKeys";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
@@ -19,6 +17,7 @@ import {
   updatePreferences,
   usePreferences,
 } from "@/stores/preferencesStore";
+import { resetExampleGames } from "@/data/example/games";
 import { useFavoriteTeamIds } from "@/stores/favoritesStore";
 
 export function SettingsPage() {
@@ -28,15 +27,12 @@ export function SettingsPage() {
   const { matches } = useTournamentData();
 
   function handleExampleDataChange(checked: boolean) {
+    if (checked) {
+      resetExampleGames();
+    }
     updatePreferences({ useExampleData: checked });
     void queryClient.invalidateQueries();
   }
-
-  const healthQuery = useQuery({
-    queryKey: queryKeys.health,
-    queryFn: getHealth,
-    staleTime: 60_000,
-  });
 
   const favoriteMatches = matches.filter(
     (match) =>
@@ -72,8 +68,27 @@ export function SettingsPage() {
             </SelectContent>
           </Select>
           <p className="mt-2 text-xs text-muted-foreground">
-            Match times use your selected timezone.
+            Kickoffs are scheduled at the venue&apos;s local time and shown in
+            your selected timezone.
           </p>
+
+          <div className="mt-4 space-y-2">
+            <p className="text-sm font-medium">Time format</p>
+            <Select
+              value={preferences.use24HourClock ? "24" : "12"}
+              onValueChange={(value) =>
+                updatePreferences({ use24HourClock: value === "24" })
+              }
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="24">24-hour (16:00)</SelectItem>
+                <SelectItem value="12">12-hour (4:00 PM)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </CardContent>
       </Card>
 
@@ -97,7 +112,7 @@ export function SettingsPage() {
               downloadCalendarIcs(favoriteMatches, "world-cup-2026-favorites.ics")
             }
           >
-            Download favorite teams only
+            Download favorite teams only (.ics)
           </Button>
         </CardContent>
       </Card>
@@ -111,8 +126,9 @@ export function SettingsPage() {
             <div className="space-y-1">
               <p className="text-sm font-medium">Use example data</p>
               <p className="text-xs text-muted-foreground">
-                Replaces live API data for offline UI testing. Persists across
-                reloads.
+                Replaces live API data for offline UI testing. On the Live tab,
+                use &quot;Simulate goal&quot; buttons to test score toasts (star
+                a team first).
               </p>
             </div>
             <Switch
@@ -121,47 +137,6 @@ export function SettingsPage() {
               aria-label="Use example data"
             />
           </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base">API</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2 text-sm">
-          <p>
-            Data source:{" "}
-            {preferences.useExampleData ? "Example" : "Live API"}
-          </p>
-          <p>
-            Status:{" "}
-            {healthQuery.data?.status === "healthy" ? "Healthy" : "Unknown"}
-          </p>
-          {healthQuery.data?.version && (
-            <p className="text-muted-foreground">
-              Version {healthQuery.data.version}
-            </p>
-          )}
-          <a
-            href="https://worldcup26.ir/api-docs/"
-            target="_blank"
-            rel="noreferrer"
-            className="inline-block text-primary underline"
-          >
-            API documentation
-          </a>
-          <p className="text-xs text-muted-foreground">
-            Data from{" "}
-            <a
-              href="https://github.com/rezarahiminia/worldcup2026"
-              target="_blank"
-              rel="noreferrer"
-              className="underline"
-            >
-              worldcup2026
-            </a>
-            . Not affiliated with FIFA.
-          </p>
         </CardContent>
       </Card>
     </div>

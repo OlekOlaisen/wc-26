@@ -1,8 +1,10 @@
 import type { EnrichedMatch, Game, Stadium, Team } from "@/api/types";
 import { deriveMatchStatus } from "./matchStatus";
-import { parseMatchLocalDate, toDateKey } from "./parseMatchDate";
+import { getMatchDateKey } from "./formatMatchTime";
+import { parseMatchLocalDate } from "./parseMatchDate";
 import { parseScorers } from "./parseScorers";
 import { getStageLabel } from "./stageLabel";
+import { getStadiumTimeZone } from "./stadiumTimeZone";
 
 function resolveTeamName(
   game: Game,
@@ -42,7 +44,9 @@ export function enrichMatch(
   teamMap: Map<string, Team>,
   stadiumMap: Map<string, Stadium>,
 ): EnrichedMatch {
-  const kickoffAt = parseMatchLocalDate(game.local_date);
+  const stadium = stadiumMap.get(game.stadium_id);
+  const venueTimeZone = getStadiumTimeZone(stadium);
+  const kickoffAt = parseMatchLocalDate(game.local_date, venueTimeZone);
   const status = deriveMatchStatus(
     game.finished,
     game.time_elapsed,
@@ -52,13 +56,13 @@ export function enrichMatch(
   return {
     ...game,
     kickoffAt,
-    dateKey: toDateKey(kickoffAt),
+    dateKey: getMatchDateKey(kickoffAt),
     status,
     homeDisplayName: resolveTeamName(game, "home", teamMap),
     awayDisplayName: resolveTeamName(game, "away", teamMap),
     homeFlag: resolveTeamFlag(game.home_team_id, teamMap),
     awayFlag: resolveTeamFlag(game.away_team_id, teamMap),
-    stadium: stadiumMap.get(game.stadium_id),
+    stadium,
     homeScorersList: parseScorers(game.home_scorers),
     awayScorersList: parseScorers(game.away_scorers),
     stageLabel: getStageLabel(game),

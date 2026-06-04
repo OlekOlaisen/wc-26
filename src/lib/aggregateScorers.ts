@@ -5,6 +5,9 @@ export interface ScorerLeaderboardEntry {
   teamName: string;
   goals: number;
   matchIds: string[];
+  /** Full name from API-Football when the scorer is matched. */
+  displayName?: string;
+  photoUrl?: string;
 }
 
 function addScorerGoals(

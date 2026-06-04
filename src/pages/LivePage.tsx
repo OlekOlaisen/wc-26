@@ -1,15 +1,20 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
+import { ExampleGoalTestButtons } from "@/components/dev/ExampleGoalTestButtons";
 import { MatchCard } from "@/components/schedule/MatchCard";
 import { Button } from "@/components/ui/button";
 import { MatchDetailSheet } from "@/components/schedule/MatchDetailSheet";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { EnrichedMatch } from "@/api/types";
 import { useTournamentData } from "@/hooks/useTournamentData";
-import { usePreferences } from "@/stores/preferencesStore";
+import {
+  useExampleDataEnabled,
+  usePreferences,
+} from "@/stores/preferencesStore";
 
 export function LivePage() {
   usePreferences();
+  const useExampleData = useExampleDataEnabled();
   const { matches, isLoading, isError } = useTournamentData();
   const [selectedMatch, setSelectedMatch] = useState<EnrichedMatch | null>(
     null,
@@ -81,13 +86,22 @@ export function LivePage() {
         </div>
       ) : (
         <div className="space-y-3">
-          {liveMatches.map((match) => (
-            <MatchCard
-              key={match.id}
-              match={match}
-              onSelect={setSelectedMatch}
-            />
-          ))}
+          {liveMatches.map((match) =>
+            useExampleData ? (
+              <div key={match.id} className="space-y-0">
+                <MatchCard match={match} onSelect={setSelectedMatch} />
+                <div className="-mt-2 rounded-b-xl border border-t-0 border-border/60 bg-muted/20 px-4 pb-3">
+                  <ExampleGoalTestButtons match={match} />
+                </div>
+              </div>
+            ) : (
+              <MatchCard
+                key={match.id}
+                match={match}
+                onSelect={setSelectedMatch}
+              />
+            ),
+          )}
         </div>
       )}
 

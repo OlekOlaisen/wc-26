@@ -8,4 +8,7 @@ export const queryKeys = {
   health: ["health"] as const,
   game: (id: string, source: TournamentDataSource) =>
     ["game", id, source] as const,
+  exampleScorerPhotos: ["scorer-photos", "example"] as const,
+  apiFootballScorerPhotos: (leaderboardSignature: string) =>
+    ["scorer-photos", "api-football", leaderboardSignature] as const,
 };

@@ -3,23 +3,11 @@ import { StadiumMeta, VenueFlagIcon } from "@/components/stadiums/StadiumMeta";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Stadium } from "@/api/types";
+import { getStadiumCountryAccentClass } from "@/lib/stadiumAccent";
 import { cn } from "@/lib/utils";
 
 interface StadiumCardProps {
   stadium: Stadium;
-}
-
-function getCountryAccentClass(country: string): string {
-  switch (country) {
-    case "United States":
-      return "bg-blue-500/70";
-    case "Mexico":
-      return "bg-emerald-500/70";
-    case "Canada":
-      return "bg-red-500/70";
-    default:
-      return "bg-primary/50";
-  }
 }
 
 export function StadiumCard({ stadium }: StadiumCardProps) {
@@ -33,7 +21,7 @@ export function StadiumCard({ stadium }: StadiumCardProps) {
         <div
           className={cn(
             "w-1 shrink-0",
-            getCountryAccentClass(stadium.country_en),
+            getStadiumCountryAccentClass(stadium.country_en),
           )}
           aria-hidden
         />

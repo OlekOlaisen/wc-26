@@ -1,5 +1,11 @@
 import { Link } from "react-router-dom";
-import { WinnerTrophy } from "@/components/shared/WinnerTrophy";
+import { MatchCardStageHeader } from "@/components/shared/MatchCardStageHeader";
+import {
+  finalMatchCardClassName,
+  getWinnerGradientVariant,
+  isFinalMatch,
+  WinnerGradientOverlay,
+} from "@/components/shared/WinnerGradientOverlay";
 import { StadiumVenueLine } from "@/components/stadiums/StadiumMeta";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,6 +16,7 @@ import {
 } from "@/lib/formatMatchTime";
 import { getMatchWinnerSide } from "@/lib/matchWinner";
 import { usePreferences } from "@/stores/preferencesStore";
+import { cn } from "@/lib/utils";
 
 interface BracketMatchSlotProps {
   match: EnrichedMatch;
@@ -23,35 +30,47 @@ export function BracketMatchSlot({ match }: BracketMatchSlotProps) {
     match.status === "finished"
       ? getMatchWinnerSide(match.home_score, match.away_score)
       : null;
+  const isFinal = isFinalMatch(match.type);
 
   return (
     <Link to={`/match/${match.id}`} className="block cursor-pointer">
-      <Card className="transition-colors hover:bg-accent/30">
-        <CardContent className="space-y-2 p-3">
-          <div className="flex items-start justify-between gap-2">
-            <span className="text-xs text-muted-foreground">#{match.id}</span>
-            <div className="flex shrink-0 flex-wrap items-center justify-end gap-1">
-              {match.status === "live" && (
+      <Card
+        className={cn(
+          "relative overflow-hidden transition-colors hover:bg-accent/30",
+          isFinal && finalMatchCardClassName,
+        )}
+      >
+        <WinnerGradientOverlay
+          winnerSide={winnerSide}
+          variant={getWinnerGradientVariant(match.type)}
+        />
+        <CardContent className="relative z-10 space-y-2 p-3">
+          <MatchCardStageHeader
+            stageLabel={match.stageLabel}
+            matchType={match.type}
+            group={match.group}
+            winnerSide={winnerSide}
+            badgeClassName="px-1.5 py-0 text-[10px] leading-tight"
+            trailing={
+              match.status === "live" ? (
                 <Badge variant="live">LIVE</Badge>
-              )}
-              <Badge
-                variant="secondary"
-                className="h-auto flex-col items-end gap-0 py-0.5 text-right text-[10px] leading-tight"
-              >
-                <span>
-                  {formatDateInUserTimezone(match.kickoffAt, "EEE, MMM d")}
-                </span>
-                <span className="font-normal text-muted-foreground">
-                  {formatKickoffInUserTimezone(match.kickoffAt)}
-                </span>
-              </Badge>
-            </div>
-          </div>
+              ) : (
+                <Badge
+                  variant="secondary"
+                  className="h-auto flex-col items-end gap-0 py-0.5 text-right text-[10px] leading-tight"
+                >
+                  <span>
+                    {formatDateInUserTimezone(match.kickoffAt, "EEE, MMM d")}
+                  </span>
+                  <span className="font-normal text-muted-foreground">
+                    {formatKickoffInUserTimezone(match.kickoffAt)}
+                  </span>
+                </Badge>
+              )
+            }
+          />
           <div className="flex items-center gap-1.5 text-sm">
-            <span className="flex min-w-0 flex-1 items-center justify-end gap-1 text-right leading-tight">
-              {winnerSide === "home" && (
-                <WinnerTrophy className="h-4 w-4" />
-              )}
+            <span className="flex min-w-0 flex-1 items-center justify-end text-right leading-tight">
               <span className="line-clamp-2">{match.homeDisplayName}</span>
             </span>
             <span className="flex shrink-0 items-center gap-1 text-muted-foreground">
@@ -69,10 +88,7 @@ export function BracketMatchSlot({ match }: BracketMatchSlotProps) {
                 <span aria-hidden>–</span>
               )}
             </span>
-            <span className="flex min-w-0 flex-1 items-center gap-1 leading-tight">
-              {winnerSide === "away" && (
-                <WinnerTrophy className="h-4 w-4" />
-              )}
+            <span className="flex min-w-0 flex-1 items-center leading-tight">
               <span className="line-clamp-2">{match.awayDisplayName}</span>
             </span>
           </div>

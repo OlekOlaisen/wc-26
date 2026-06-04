@@ -8,3 +8,9 @@
   to = "https://worldcup26.ir/:splat"
   status = 200
   force = true
+
+[[redirects]]
+  from = "/api-football/*"
+  to = "/.netlify/functions/api-football/:splat"
+  status = 200
+  force = true

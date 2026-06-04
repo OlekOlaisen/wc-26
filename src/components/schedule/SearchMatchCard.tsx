@@ -1,4 +1,10 @@
-import { WinnerTrophy } from "@/components/shared/WinnerTrophy";
+import { MatchCardStageHeader } from "@/components/shared/MatchCardStageHeader";
+import {
+  finalMatchCardClassName,
+  getWinnerGradientVariant,
+  isFinalMatch,
+  WinnerGradientOverlay,
+} from "@/components/shared/WinnerGradientOverlay";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
 import type { EnrichedMatch } from "@/api/types";
@@ -19,13 +25,11 @@ function CompactTeamRow({
   flag,
   score,
   align,
-  isWinner,
 }: {
   name: string;
   flag?: string;
   score: string;
   align: "left" | "right";
-  isWinner?: boolean;
 }) {
   return (
     <div
@@ -47,7 +51,6 @@ function CompactTeamRow({
         </div>
       )}
       <span className="truncate text-sm font-medium leading-tight">{name}</span>
-      {isWinner && <WinnerTrophy className="h-4 w-4" />}
       {score !== "" && (
         <span className="shrink-0 text-lg font-bold tabular-nums leading-none">
           {score}
@@ -65,44 +68,48 @@ export function SearchMatchCard({ match }: SearchMatchCardProps) {
     match.status === "finished"
       ? getMatchWinnerSide(match.home_score, match.away_score)
       : null;
+  const isFinal = isFinalMatch(match.type);
 
   return (
     <Link
       to={`/match/${match.id}`}
-      className="block rounded-lg border p-3 transition-colors hover:bg-accent/30"
+      className={cn(
+        "relative block overflow-hidden rounded-lg border bg-card p-3 transition-colors hover:bg-accent/30",
+        isFinal && finalMatchCardClassName,
+      )}
     >
-      <div className="space-y-2">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex flex-wrap items-center gap-1">
-            <Badge
-              variant="secondary"
-              className="px-1.5 py-0 text-[10px] leading-tight"
-            >
-              {match.stageLabel}
-            </Badge>
-            <span className="text-[10px] text-muted-foreground">
-              #{match.id}
-            </span>
-          </div>
-          <div className="flex shrink-0 items-center gap-1">
-            {match.status === "live" && (
-              <Badge variant="live">LIVE</Badge>
-            )}
-            {!showScore && (
-              <Badge
-                variant="secondary"
-                className="h-auto flex-col items-end gap-0 px-1.5 py-0.5 text-right text-[10px] leading-tight"
-              >
-                <span>
-                  {formatDateInUserTimezone(match.kickoffAt, "EEE, MMM d")}
-                </span>
-                <span className="font-normal text-muted-foreground">
-                  {formatKickoffInUserTimezone(match.kickoffAt)}
-                </span>
-              </Badge>
-            )}
-          </div>
-        </div>
+      <WinnerGradientOverlay
+        winnerSide={winnerSide}
+        variant={getWinnerGradientVariant(match.type)}
+      />
+      <div className="relative z-10 space-y-2">
+        <MatchCardStageHeader
+          stageLabel={match.stageLabel}
+          matchType={match.type}
+          group={match.group}
+          winnerSide={winnerSide}
+          badgeClassName="px-1.5 py-0 text-[10px] leading-tight"
+          trailing={
+            <>
+              {match.status === "live" && (
+                <Badge variant="live">LIVE</Badge>
+              )}
+              {!showScore && (
+                <Badge
+                  variant="secondary"
+                  className="h-auto flex-col items-end gap-0 px-1.5 py-0.5 text-right text-[10px] leading-tight"
+                >
+                  <span>
+                    {formatDateInUserTimezone(match.kickoffAt, "EEE, MMM d")}
+                  </span>
+                  <span className="font-normal text-muted-foreground">
+                    {formatKickoffInUserTimezone(match.kickoffAt)}
+                  </span>
+                </Badge>
+              )}
+            </>
+          }
+        />
 
         <div className="flex items-center gap-2">
           <CompactTeamRow
@@ -110,7 +117,6 @@ export function SearchMatchCard({ match }: SearchMatchCardProps) {
             flag={match.homeFlag}
             score={showScore ? match.home_score : ""}
             align="left"
-            isWinner={winnerSide === "home"}
           />
           {showScore && (
             <span className="shrink-0 text-xs text-muted-foreground">–</span>
@@ -120,7 +126,6 @@ export function SearchMatchCard({ match }: SearchMatchCardProps) {
             flag={match.awayFlag}
             score={showScore ? match.away_score : ""}
             align="right"
-            isWinner={winnerSide === "away"}
           />
         </div>
       </div>

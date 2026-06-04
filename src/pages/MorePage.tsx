@@ -1,4 +1,3 @@
-import { useQuery } from "@tanstack/react-query";
 import {
   LayoutGrid,
   MapPin,
@@ -8,10 +7,7 @@ import {
   Users,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import { getHealth } from "@/api/endpoints";
-import { queryKeys } from "@/api/queryKeys";
 import { Card, CardContent } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 
 const links = [
   { to: "/teams", label: "Teams", description: "48 nations", icon: Users },
@@ -43,13 +39,6 @@ const links = [
 ] as const;
 
 export function MorePage() {
-  const healthQuery = useQuery({
-    queryKey: queryKeys.health,
-    queryFn: getHealth,
-    staleTime: 60_000,
-    retry: 1,
-  });
-
   return (
     <div className="space-y-4">
       <div>
@@ -76,26 +65,6 @@ export function MorePage() {
           </Link>
         ))}
       </div>
-
-      <Card>
-        <CardContent className="p-4 text-sm">
-          <p className="font-medium">API status</p>
-          <p
-            className={cn(
-              "mt-1",
-              healthQuery.data?.status === "healthy"
-                ? "text-primary"
-                : "text-muted-foreground",
-            )}
-          >
-            {healthQuery.isLoading
-              ? "Checking…"
-              : healthQuery.data?.status === "healthy"
-                ? `Healthy · v${healthQuery.data.version ?? "?"}`
-                : "Unavailable"}
-          </p>
-        </CardContent>
-      </Card>
     </div>
   );
 }

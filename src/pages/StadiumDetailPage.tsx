@@ -1,10 +1,9 @@
 import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { BackLink } from "@/components/layout/BackLink";
-import { StadiumMeta, VenueFlagIcon } from "@/components/stadiums/StadiumMeta";
+import { StadiumDetailHeader } from "@/components/stadiums/StadiumDetailHeader";
 import { MatchCard } from "@/components/schedule/MatchCard";
 import { MatchDetailSheet } from "@/components/schedule/MatchDetailSheet";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import type { EnrichedMatch } from "@/api/types";
 import { useTournamentData } from "@/hooks/useTournamentData";
@@ -41,24 +40,13 @@ export function StadiumDetailPage() {
     <div className="space-y-6">
       <BackLink to="/stadiums">Venues</BackLink>
 
-      <div className="flex items-center gap-3">
-        <VenueFlagIcon countryEn={stadium.country_en} />
-        <div className="min-w-0 flex-1 space-y-2">
-          <div className="flex flex-wrap items-start justify-between gap-2">
-            <h2 className="text-xl font-bold">{stadium.name_en}</h2>
-            {stadium.region && (
-              <Badge variant="outline">{stadium.region}</Badge>
-            )}
-          </div>
-          <p className="text-sm text-muted-foreground">{stadium.fifa_name}</p>
-          <StadiumMeta stadium={stadium} className="text-sm" />
-        </div>
-      </div>
+      <StadiumDetailHeader
+        stadium={stadium}
+        matchCount={venueMatches.length}
+      />
 
       <section className="space-y-3">
-        <h3 className="font-semibold">
-          Matches at this venue ({venueMatches.length})
-        </h3>
+        <h3 className="font-semibold">Matches at this venue</h3>
         <div className="space-y-3">
           {venueMatches.map((match) => (
             <MatchCard

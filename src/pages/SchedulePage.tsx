@@ -8,8 +8,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { EnrichedMatch, MatchFilter } from "@/api/types";
 import { useTournamentData } from "@/hooks/useTournamentData";
 import { filterFavoriteMatches } from "@/lib/favoriteMatches";
-import { groupMatchesByDate } from "@/lib/groupByDate";
+import { groupMatchesByDate, sortMatchesByKickoff } from "@/lib/groupByDate";
 import { useFavoriteTeamIds } from "@/stores/favoritesStore";
+import { usePreferences } from "@/stores/preferencesStore";
 
 export function SchedulePage() {
   const { matches, isLoading, isError, error, dataUpdatedAt } =
@@ -21,13 +22,14 @@ export function SchedulePage() {
     null,
   );
   const favoriteTeamIds = useFavoriteTeamIds();
+  const preferences = usePreferences();
 
   const showAllDates =
     favoritesOnly || activeFilter === "upcoming" || selectedDateKey === null;
 
   const matchesByDate = useMemo(
     () => groupMatchesByDate(matches),
-    [matches],
+    [matches, preferences.timezone],
   );
 
   const filteredMatches = useMemo(() => {
@@ -39,10 +41,11 @@ export function SchedulePage() {
       pool = filterFavoriteMatches(pool, favoriteTeamIds);
     }
 
-    if (activeFilter === "all") {
-      return pool;
-    }
-    return pool.filter((match) => match.status === activeFilter);
+    const filtered =
+      activeFilter === "all"
+        ? pool
+        : pool.filter((match) => match.status === activeFilter);
+    return sortMatchesByKickoff(filtered);
   }, [
     matches,
     matchesByDate,
@@ -58,7 +61,7 @@ export function SchedulePage() {
       return null;
     }
     return groupMatchesByDate(filteredMatches);
-  }, [showAllDates, filteredMatches]);
+  }, [showAllDates, filteredMatches, preferences.timezone]);
 
   const filteredDateKeys = useMemo(() => {
     if (!filteredMatchesByDate) {

@@ -45,6 +45,7 @@ Open [http://localhost:5173](http://localhost:5173).
 | -------- | ----------- |
 | `VITE_API_BASE_URL` | Optional override (default: `/api` proxy). Avoid a bare `https://worldcup26.ir` URL in production. |
 | `VITE_API_TOKEN` | Optional JWT Bearer token if the API requires auth |
+| `API_FOOTBALL_KEY` | [API-Football](https://www.api-football.com/) key for player photos on Top scorers (server-side on Netlify; Vite dev proxy reads `.env`) |
 
 ## Scripts
 

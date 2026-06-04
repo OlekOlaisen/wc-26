@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useMemo } from "react";
 import { queryKeys } from "@/api/queryKeys";
 import { loadGames } from "@/api/tournamentData";
 import type { EnrichedMatch } from "@/api/types";
@@ -42,16 +43,17 @@ export function useEnrichedMatches() {
     enabled: teamsQuery.isSuccess && stadiumsQuery.isSuccess,
   });
 
-  const enrichedMatches: EnrichedMatch[] =
-    gamesQuery.data &&
-    teamsQuery.data &&
-    stadiumsQuery.data
-      ? enrichMatches(
-          gamesQuery.data,
-          teamsQuery.data,
-          stadiumsQuery.data,
-        )
-      : [];
+  const enrichedMatches = useMemo(() => {
+    if (!gamesQuery.data || !teamsQuery.data || !stadiumsQuery.data) {
+      return [];
+    }
+
+    return enrichMatches(
+      gamesQuery.data,
+      teamsQuery.data,
+      stadiumsQuery.data,
+    );
+  }, [gamesQuery.data, teamsQuery.data, stadiumsQuery.data]);
 
   return {
     matches: enrichedMatches,

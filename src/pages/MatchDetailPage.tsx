@@ -51,8 +51,8 @@ export function MatchDetailPage() {
   return (
     <div className="space-y-4">
       <BackLink to="/">Schedule</BackLink>
-      <h2 className="text-lg font-semibold">Match #{match.id}</h2>
-      <MatchDetailContent match={match} showShareLink={false} />
+      <h2 className="text-lg font-semibold">{match.stageLabel}</h2>
+      <MatchDetailContent match={match} />
     </div>
   );
 }

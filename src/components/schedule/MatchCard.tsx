@@ -1,4 +1,10 @@
-import { WinnerTrophy } from "@/components/shared/WinnerTrophy";
+import { MatchCardStageHeader } from "@/components/shared/MatchCardStageHeader";
+import {
+  finalMatchCardClassName,
+  getWinnerGradientVariant,
+  isFinalMatch,
+  WinnerGradientOverlay,
+} from "@/components/shared/WinnerGradientOverlay";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import type { EnrichedMatch, GoalScorer } from "@/api/types";
@@ -23,13 +29,11 @@ function TeamColumn({
   flag,
   scorers,
   align,
-  isWinner,
 }: {
   name: string;
   flag?: string;
   scorers: GoalScorer[];
   align: "left" | "right";
-  isWinner?: boolean;
 }) {
   return (
     <div
@@ -59,7 +63,6 @@ function TeamColumn({
         <span className="line-clamp-2 text-sm font-medium leading-tight">
           {name}
         </span>
-        {isWinner && <WinnerTrophy className="h-5 w-5 shrink-0" />}
       </div>
       {scorers.length > 0 && (
         <ul
@@ -95,47 +98,49 @@ export function MatchCard({
     match.status === "finished"
       ? getMatchWinnerSide(match.home_score, match.away_score)
       : null;
+  const isFinal = isFinalMatch(match.type);
 
   return (
     <Card
       className={cn(
-        "cursor-pointer transition-colors hover:bg-accent/30",
+        "relative overflow-hidden cursor-pointer transition-colors hover:bg-accent/30",
         isFavorite && "ring-1 ring-primary/30",
+        isFinal && finalMatchCardClassName,
       )}
       onClick={() => onSelect(match)}
     >
-      <CardContent className="space-y-3 p-4">
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex flex-wrap items-center gap-1.5">
-            {isFavorite && (
-              <Badge variant="outline" className="text-primary">
-                ★
-              </Badge>
-            )}
-            <Badge variant="secondary">{match.stageLabel}</Badge>
-            <span className="text-xs text-muted-foreground">
-              #{match.id}
-            </span>
-          </div>
-          <div className="flex shrink-0 items-center gap-1.5">
-            {match.status === "live" && (
-              <Badge variant="live">LIVE</Badge>
-            )}
-            {!showScore && (
-              <Badge
-                variant="secondary"
-                className="h-auto flex-col items-end gap-0 px-1.5 py-0.5 text-right text-[10px] leading-tight"
-              >
-                <span>
-                  {formatDateInUserTimezone(match.kickoffAt, "EEE, MMM d")}
-                </span>
-                <span className="font-normal text-muted-foreground">
-                  {formatKickoffInUserTimezone(match.kickoffAt)}
-                </span>
-              </Badge>
-            )}
-          </div>
-        </div>
+      <WinnerGradientOverlay
+        winnerSide={winnerSide}
+        variant={getWinnerGradientVariant(match.type)}
+      />
+      <CardContent className="relative z-10 space-y-3 p-4">
+        <MatchCardStageHeader
+          stageLabel={match.stageLabel}
+          matchType={match.type}
+          group={match.group}
+          winnerSide={winnerSide}
+          isFavorite={isFavorite}
+          trailing={
+            <>
+              {match.status === "live" && (
+                <Badge variant="live">LIVE</Badge>
+              )}
+              {!showScore && (
+                <Badge
+                  variant="secondary"
+                  className="h-auto flex-col items-end gap-0 px-1.5 py-0.5 text-right text-[10px] leading-tight"
+                >
+                  <span>
+                    {formatDateInUserTimezone(match.kickoffAt, "EEE, MMM d")}
+                  </span>
+                  <span className="font-normal text-muted-foreground">
+                    {formatKickoffInUserTimezone(match.kickoffAt)}
+                  </span>
+                </Badge>
+              )}
+            </>
+          }
+        />
 
         <div className="flex items-start gap-2">
           <TeamColumn
@@ -143,20 +148,36 @@ export function MatchCard({
             flag={match.homeFlag}
             scorers={match.homeScorersList}
             align="left"
-            isWinner={winnerSide === "home"}
           />
           {showScore && (
             <div
-              className="flex shrink-0 items-center gap-1 self-start pt-0.5 text-muted-foreground"
+              className={cn(
+                "flex shrink-0 items-center gap-1 self-start pt-0.5",
+                isFinal ? "text-amber-200/70" : "text-muted-foreground",
+              )}
               aria-label={`${match.home_score} to ${match.away_score}`}
             >
-              <span className="min-w-[1.25rem] text-center text-2xl font-bold tabular-nums leading-none text-foreground">
+              <span
+                className={cn(
+                  "min-w-[1.25rem] text-center font-bold tabular-nums leading-none",
+                  isFinal
+                    ? "text-3xl text-amber-50 drop-shadow-[0_0_12px_oklch(0.75_0.12_85/0.35)]"
+                    : "text-2xl text-foreground",
+                )}
+              >
                 {match.home_score}
               </span>
               <span className="text-xs" aria-hidden>
                 –
               </span>
-              <span className="min-w-[1.25rem] text-center text-2xl font-bold tabular-nums leading-none text-foreground">
+              <span
+                className={cn(
+                  "min-w-[1.25rem] text-center font-bold tabular-nums leading-none",
+                  isFinal
+                    ? "text-3xl text-amber-50 drop-shadow-[0_0_12px_oklch(0.75_0.12_85/0.35)]"
+                    : "text-2xl text-foreground",
+                )}
+              >
                 {match.away_score}
               </span>
             </div>
@@ -166,7 +187,6 @@ export function MatchCard({
             flag={match.awayFlag}
             scorers={match.awayScorersList}
             align="right"
-            isWinner={winnerSide === "away"}
           />
         </div>
 

@@ -1,5 +1,8 @@
 import type { Game } from "@/api/types";
-import { daysFromNow, hoursFromNow } from "./dateHelpers";
+import { parseScorers } from "@/lib/parseScorers";
+import { daysFromNow, fixedExampleLocalDate, hoursFromNow } from "./dateHelpers";
+
+let exampleGamesCache: Game[] | null = null;
 
 function buildExampleGames(): Game[] {
   return [
@@ -23,10 +26,10 @@ function buildExampleGames(): Game[] {
       id: "ex-2",
       home_team_id: "ex-team-usa",
       away_team_id: "ex-team-eng",
-      home_score: "2",
-      away_score: "0",
-      home_scorers: '[{"name":"Pulisic","minute":"12"},{"name":"Reyna","minute":"58"}]',
-      away_scorers: "",
+      home_score: "0",
+      away_score: "2",
+      home_scorers: "",
+      away_scorers: '[{"name":"Kane","minute":"12"},{"name":"Saka","minute":"58"}]',
       group: "D",
       matchday: "3",
       local_date: daysFromNow(-2, 19),
@@ -169,25 +172,73 @@ function buildExampleGames(): Game[] {
     },
     {
       id: "ex-99",
-      home_team_id: "0",
-      away_team_id: "0",
-      home_score: "0",
-      away_score: "0",
-      home_scorers: "",
-      away_scorers: "",
+      home_team_id: "ex-team-usa",
+      away_team_id: "ex-team-fra",
+      home_score: "2",
+      away_score: "1",
+      home_scorers: '[{"name":"Pulisic","minute":"34"},{"name":"Reyna","minute":"89"}]',
+      away_scorers: '[{"name":"Griezmann","minute":"62"}]',
       group: "",
       matchday: "",
-      local_date: daysFromNow(35, 18),
+      local_date: fixedExampleLocalDate(2026, 7, 9, 16),
       stadium_id: "ex-stadium-sofi",
-      finished: "FALSE",
-      time_elapsed: "notstarted",
+      finished: "TRUE",
+      time_elapsed: "90",
       type: "final",
-      home_team_label: "Winner Semi-final 1",
-      away_team_label: "Winner Semi-final 2",
     },
   ];
 }
 
+function getMutableExampleGames(): Game[] {
+  if (!exampleGamesCache) {
+    exampleGamesCache = buildExampleGames();
+  }
+  return exampleGamesCache;
+}
+
 export function getExampleGames(): Game[] {
-  return buildExampleGames();
+  return getMutableExampleGames().map((game) => ({ ...game }));
+}
+
+export function resetExampleGames(): void {
+  exampleGamesCache = buildExampleGames();
+}
+
+function parseMatchScore(score: string): number {
+  const parsed = Number.parseInt(score, 10);
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
+function resolveGoalMinute(timeElapsed: string): string {
+  const elapsed = Number.parseInt(timeElapsed, 10);
+  if (Number.isNaN(elapsed) || elapsed <= 0) {
+    return "1";
+  }
+  return String(Math.min(elapsed + 1, 120));
+}
+
+export function simulateExampleGoal(
+  matchId: string,
+  side: "home" | "away",
+): boolean {
+  const game = getMutableExampleGames().find((entry) => entry.id === matchId);
+  if (!game || game.finished === "TRUE") {
+    return false;
+  }
+
+  const scoreField = side === "home" ? "home_score" : "away_score";
+  const scorersField = side === "home" ? "home_scorers" : "away_scorers";
+  const nextScore = parseMatchScore(game[scoreField]) + 1;
+  const scorers = parseScorers(game[scorersField]);
+  const goalMinute = resolveGoalMinute(game.time_elapsed);
+
+  game[scoreField] = String(nextScore);
+  scorers.push({ name: "Test Goal", minute: goalMinute });
+  game[scorersField] = JSON.stringify(scorers);
+
+  if (game.time_elapsed === "notstarted" || game.time_elapsed === "") {
+    game.time_elapsed = goalMinute;
+  }
+
+  return true;
 }

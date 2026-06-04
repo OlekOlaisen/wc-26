@@ -18,3 +18,13 @@ export function daysFromNow(days: number, hour = 15): string {
   date.setDate(date.getDate() + days);
   return formatExampleLocalDate(date);
 }
+
+export function fixedExampleLocalDate(
+  year: number,
+  month: number,
+  day: number,
+  hour = 15,
+): string {
+  const date = new Date(year, month - 1, day, hour, 0, 0, 0);
+  return formatExampleLocalDate(date);
+}
