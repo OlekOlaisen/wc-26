@@ -117,7 +117,7 @@ export function SettingsPage() {
         </CardContent>
       </Card>
 
-      <Card>
+     {/*  <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-base">Testing</CardTitle>
         </CardHeader>
@@ -138,7 +138,7 @@ export function SettingsPage() {
             />
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
   );
 }
