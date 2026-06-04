@@ -1,3 +1,4 @@
+/* import { useQueryClient } from "@tanstack/react-query"; */
 import { BackLink } from "@/components/layout/BackLink";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+/* import { Switch } from "@/components/ui/switch"; */
 import { useTournamentData } from "@/hooks/useTournamentData";
 import { downloadCalendarIcs } from "@/lib/exportCalendar";
 import {
@@ -15,12 +17,22 @@ import {
   updatePreferences,
   usePreferences,
 } from "@/stores/preferencesStore";
+/* import { resetExampleGames } from "@/data/example/games"; */
 import { useFavoriteTeamIds } from "@/stores/favoritesStore";
 
 export function SettingsPage() {
+ /*  const queryClient = useQueryClient(); */
   const preferences = usePreferences();
   const favoriteTeamIds = useFavoriteTeamIds();
   const { matches } = useTournamentData();
+/* 
+  function handleExampleDataChange(checked: boolean) {
+    if (checked) {
+      resetExampleGames();
+    }
+    updatePreferences({ useExampleData: checked });
+    void queryClient.invalidateQueries();
+  } */
 
   const favoriteMatches = matches.filter(
     (match) =>
@@ -97,7 +109,10 @@ export function SettingsPage() {
             variant="outline"
             disabled={favoriteMatches.length === 0}
             onClick={() =>
-              downloadCalendarIcs(favoriteMatches, "world-cup-2026-favorites.ics")
+              downloadCalendarIcs(
+                favoriteMatches,
+                "world-cup-2026-favorites.ics",
+              )
             }
           >
             Download favorite teams only (.ics)
@@ -105,7 +120,7 @@ export function SettingsPage() {
         </CardContent>
       </Card>
 
-     {/*  <Card>
+      {/* <Card>
         <CardHeader className="pb-2">
           <CardTitle className="text-base">Testing</CardTitle>
         </CardHeader>

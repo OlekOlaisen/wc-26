@@ -420,12 +420,42 @@
   animation: sheet-overlay-fade-out 0.28s ease-in forwards;
 }
 
-.sheet-content[data-state="open"] {
+.sheet-content.sheet-content--dragging[data-state="open"],
+.sheet-content.sheet-content--dragging[data-state="closed"] {
+  animation: none !important;
+  transform: translate3d(0, var(--sheet-drag-y, 0px), 0) !important;
+  transition: none !important;
+}
+
+.sheet-content.sheet-content--dragging.sheet-content--snapping-back {
+  --sheet-drag-y: 0px;
+  transition: transform 0.25s cubic-bezier(0.32, 0.72, 0, 1) !important;
+}
+
+.sheet-content.sheet-content--dragging.sheet-content--dismissing {
+  transition: transform 0.28s cubic-bezier(0.32, 0.72, 0, 1) !important;
+}
+
+.sheet-content.sheet-content--dragging.sheet-content--dismissing.sheet-content--dismiss-active {
+  transform: translate3d(0, 100%, 0) !important;
+}
+
+.sheet-content.sheet-content--drag-dismissed[data-state="closed"] {
+  animation: none !important;
+  transform: translate3d(0, 100%, 0) !important;
+}
+
+.sheet-content[data-state="open"]:not(.sheet-content--settled) {
   animation: sheet-slide-in-from-bottom 0.38s cubic-bezier(0.32, 0.72, 0, 1)
     forwards;
 }
 
-.sheet-content[data-state="closed"] {
+.sheet-content.sheet-content--settled[data-state="open"] {
+  animation: none;
+  transform: translate3d(0, 0, 0);
+}
+
+.sheet-content[data-state="closed"]:not(.sheet-content--drag-dismissed) {
   animation: sheet-slide-out-to-bottom 0.3s cubic-bezier(0.32, 0.72, 0, 1)
     forwards;
 }
@@ -450,8 +480,10 @@
   }
 
   .sheet-content[data-state="open"],
-  .sheet-content[data-state="closed"] {
+  .sheet-content[data-state="closed"],
+  .sheet-content.sheet-content--settled[data-state="open"] {
     animation: none;
+    transform: none;
   }
 
   .goal-toast-enter,

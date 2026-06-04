@@ -55,6 +55,8 @@ export function MatchDetailSheet({ match, onClose }: MatchDetailSheetProps) {
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
       <SheetContent
+        sheetOpen={open}
+        onSwipeClose={() => handleOpenChange(false)}
         className={cn(
           isFinal &&
             "final-match-sheet flex h-[85vh] max-h-[85vh] flex-col overflow-hidden p-0",
@@ -63,7 +65,10 @@ export function MatchDetailSheet({ match, onClose }: MatchDetailSheetProps) {
         {displayMatch && isFinal ? (
           <>
             <div aria-hidden className="final-match-sheet-bg" />
-            <div className="final-match-sheet-scroll relative z-10 min-h-0 flex-1 overflow-y-auto overscroll-contain bg-transparent px-6 pb-10 pt-6 [-webkit-overflow-scrolling:touch]">
+            <div
+              data-sheet-scroll
+              className="final-match-sheet-scroll relative z-10 min-h-0 flex-1 overflow-y-auto overscroll-y-contain bg-transparent px-6 pb-10 pt-2 [-webkit-overflow-scrolling:touch] [touch-action:pan-y]"
+            >
               <SheetHeader className="items-center space-y-3 pb-2 text-center">
                 <SheetTitle className="sr-only">
                   {displayMatch.stageLabel}
