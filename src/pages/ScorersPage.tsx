@@ -11,19 +11,13 @@ import { enrichLeaderboardWithPhotos } from "@/lib/matchScorerPhotos";
 export function ScorersPage() {
   const { matches, isLoading, isError } = useTournamentData();
 
-  const leaderboard = useMemo(
-    () => buildScorerLeaderboard(matches),
-    [matches],
-  );
+  const leaderboard = useMemo(() => buildScorerLeaderboard(matches), [matches]);
 
   const scorerPhotosQuery = useScorerPhotos(leaderboard);
 
   const leaderboardWithPhotos = useMemo(
     () =>
-      enrichLeaderboardWithPhotos(
-        leaderboard,
-        scorerPhotosQuery.data ?? [],
-      ),
+      enrichLeaderboardWithPhotos(leaderboard, scorerPhotosQuery.data ?? []),
     [leaderboard, scorerPhotosQuery.data],
   );
 
@@ -41,7 +35,6 @@ export function ScorersPage() {
     <div className="space-y-4">
       <div>
         <h2 className="text-lg font-semibold">Top scorers</h2>
-        
       </div>
 
       {leaderboardWithPhotos.length === 0 ? (
@@ -54,30 +47,30 @@ export function ScorersPage() {
             const displayName = entry.displayName ?? entry.playerName;
 
             return (
-            <Card key={`${entry.playerName}-${entry.teamName}`}>
-              <CardContent className="flex items-center gap-3 p-4">
-                <span className="w-6 text-center text-sm font-bold text-muted-foreground">
-                  {index + 1}
-                </span>
-                <ScorerAvatar
-                  playerName={displayName}
-                  photoUrl={entry.photoUrl}
-                />
-                <div className="min-w-0 flex-1">
-                  <p className="font-semibold">{displayName}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {entry.teamName}
-                  </p>
-                </div>
-                <div className="text-right">
-                  <p className="text-lg font-bold">{entry.goals}</p>
-                  <p className="text-[10px] text-muted-foreground">
-                    {entry.matchIds.length} match
-                    {entry.matchIds.length === 1 ? "" : "es"}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+              <Card key={`${entry.playerName}-${entry.teamName}`}>
+                <CardContent className="flex items-center gap-3 p-4">
+                  <span className="w-6 text-center text-sm font-bold text-muted-foreground">
+                    {index + 1}
+                  </span>
+                  <ScorerAvatar
+                    playerName={displayName}
+                    photoUrl={entry.photoUrl}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold">{displayName}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {entry.teamName}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-lg font-bold">{entry.goals}</p>
+                    <p className="text-[10px] text-muted-foreground">
+                      {entry.matchIds.length} match
+                      {entry.matchIds.length === 1 ? "" : "es"}
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
             );
           })}
         </div>
