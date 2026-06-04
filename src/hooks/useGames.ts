@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { queryKeys } from "@/api/queryKeys";
 import { loadGames } from "@/api/tournamentData";
-import type { EnrichedMatch } from "@/api/types";
 import { enrichMatches } from "@/lib/enrichMatch";
 import { hasAnyLiveMatch } from "@/lib/matchStatus";
 import {

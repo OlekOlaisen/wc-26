@@ -75,10 +75,10 @@ export function StadiumDetailHeader({
               ) : null}
               <div className="flex flex-wrap gap-2 pt-2">
                 <MetaChip icon={MapPin}>
-                  {stadium.city_en}, {stadium.country_en}
+                  {`${stadium.city_en}, ${stadium.country_en}`}
                 </MetaChip>
                 <MetaChip icon={Users}>
-                  {stadium.capacity.toLocaleString()} seats
+                  {`${stadium.capacity.toLocaleString()} seats`}
                 </MetaChip>
               </div>
               {matchCount !== undefined && matchCount > 0 ? (
